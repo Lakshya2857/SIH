@@ -1,0 +1,1127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+  <title>DEMS · Mobile Evidence System</title>
+  <!-- Font Awesome 6 -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background: #eef2f7;
+      font-family: -apple-system, 'Segoe UI', Roboto, system-ui, sans-serif;
+      padding: 0.8rem;
+      color: #0b1e2f;
+      min-height: 100vh;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+    }
+
+    .app-wrapper {
+      max-width: 500px;
+      width: 100%;
+      background: #ffffff;
+      border-radius: 2rem;
+      box-shadow: 0 12px 30px rgba(0, 20, 40, 0.18);
+      overflow: hidden;
+      padding: 1.2rem 1.2rem 1rem;
+      transition: 0.2s;
+    }
+
+    /* Top Bar */
+    .top-bar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1.2rem;
+      gap: 0.5rem;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .brand-icon {
+      background: #0a2942;
+      color: white;
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 14px;
+      font-size: 1.2rem;
+      flex-shrink: 0;
+    }
+
+    .brand h1 {
+      font-weight: 700;
+      font-size: 1.3rem;
+      letter-spacing: -0.3px;
+      color: #0b1f32;
+    }
+
+    .brand h1 span {
+      font-weight: 400;
+      font-size: 0.65rem;
+      background: #d9e6f2;
+      padding: 0.1rem 0.7rem;
+      border-radius: 40px;
+      margin-left: 5px;
+      color: #00407a;
+      display: inline-block;
+    }
+
+    .header-actions {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .badge-mha {
+      background: #0b2a44;
+      color: white;
+      font-weight: 600;
+      font-size: 0.55rem;
+      letter-spacing: 0.3px;
+      padding: 0.25rem 0.7rem;
+      border-radius: 40px;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      white-space: nowrap;
+    }
+
+    .user-chip {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: #eaf0f7;
+      padding: 0.15rem 0.8rem 0.15rem 0.4rem;
+      border-radius: 60px;
+      font-weight: 500;
+      font-size: 0.7rem;
+      cursor: pointer;
+      transition: 0.2s;
+      touch-action: manipulation;
+      white-space: nowrap;
+    }
+
+    .user-chip i {
+      background: #1b4a70;
+      color: white;
+      padding: 4px 6px;
+      border-radius: 40px;
+      font-size: 0.65rem;
+    }
+
+    /* Navigation - Bottom style for mobile */
+    .nav-tabs {
+      display: flex;
+      gap: 0.2rem;
+      background: #f1f6fc;
+      border-radius: 3rem;
+      padding: 0.25rem;
+      margin-bottom: 1.2rem;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+    }
+
+    .nav-tabs::-webkit-scrollbar {
+      display: none;
+    }
+
+    .nav-tab {
+      flex: 1;
+      min-width: 70px;
+      background: transparent;
+      border: none;
+      padding: 0.5rem 0.4rem;
+      font-weight: 600;
+      font-size: 0.7rem;
+      color: #3b607d;
+      border-radius: 2rem;
+      cursor: pointer;
+      transition: 0.15s;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2px;
+      touch-action: manipulation;
+      white-space: nowrap;
+    }
+
+    .nav-tab i {
+      font-size: 1rem;
+    }
+
+    .nav-tab.active {
+      background: #0f3450;
+      color: white;
+      box-shadow: 0 2px 8px rgba(15,52,80,0.25);
+    }
+
+    /* Pages */
+    .page {
+      display: none;
+      animation: fadePage 0.25s ease;
+    }
+
+    .page.active {
+      display: block;
+    }
+
+    @keyframes fadePage {
+      0% { opacity: 0.4; transform: translateY(6px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Stats - Mobile grid */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.6rem;
+      margin-bottom: 1.2rem;
+    }
+
+    .stat-card {
+      background: #f5f9ff;
+      border-radius: 1.2rem;
+      padding: 0.7rem 0.8rem;
+      border: 1px solid #e2ebf5;
+      cursor: pointer;
+      transition: 0.15s;
+      touch-action: manipulation;
+    }
+
+    .stat-card:active {
+      transform: scale(0.96);
+      background: #e8f0fa;
+    }
+
+    .stat-card .label {
+      font-size: 0.55rem;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+      color: #456683;
+    }
+
+    .stat-card .value {
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: #042139;
+      line-height: 1.2;
+    }
+
+    .stat-card .sub {
+      font-size: 0.6rem;
+      color: #2d5b7c;
+    }
+
+    /* Flow Section - horizontal scroll */
+    .flow-section {
+      background: #f1f6fc;
+      border-radius: 1.5rem;
+      padding: 1rem 0.8rem 0.6rem;
+      margin-bottom: 1.2rem;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .flow-steps-horizontal {
+      display: flex;
+      gap: 0.5rem;
+      min-width: max-content;
+      padding-bottom: 0.2rem;
+    }
+
+    .step-card {
+      flex: 0 0 90px;
+      background: white;
+      border-radius: 1.4rem;
+      padding: 0.7rem 0.3rem 0.5rem;
+      text-align: center;
+      border: 1px solid #dbe6f0;
+      transition: 0.15s;
+      cursor: pointer;
+      touch-action: manipulation;
+    }
+
+    .step-card:active {
+      transform: scale(0.95);
+    }
+
+    .step-card .step-num {
+      background: #0f3450;
+      color: white;
+      width: 24px;
+      height: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 40px;
+      margin: 0 auto 4px;
+      font-weight: 700;
+      font-size: 0.65rem;
+    }
+
+    .step-card i {
+      font-size: 1rem;
+      color: #1a5d87;
+    }
+
+    .step-card h4 {
+      font-size: 0.65rem;
+      margin-top: 2px;
+    }
+
+    .step-card p {
+      font-size: 0.5rem;
+      color: #396183;
+    }
+
+    .status-banner {
+      background: #e4eefa;
+      padding: 0.2rem 0.8rem;
+      border-radius: 60px;
+      font-size: 0.6rem;
+      display: inline-block;
+      margin-top: 0.4rem;
+      width: 100%;
+      text-align: center;
+    }
+
+    /* Docket Grid - mobile stack */
+    .docket-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      margin: 0.8rem 0 0.5rem;
+    }
+
+    .evidence-panel {
+      background: #f9fcff;
+      border-radius: 1.5rem;
+      padding: 1rem 1rem 1.2rem;
+      border: 1px solid #dee9f2;
+    }
+
+    .evidence-item {
+      background: white;
+      border-radius: 1rem;
+      padding: 0.6rem 0.8rem;
+      margin-bottom: 0.5rem;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      border: 1px solid #e3ecf5;
+      transition: 0.15s;
+      touch-action: manipulation;
+    }
+
+    .evidence-item:active {
+      transform: scale(0.98);
+    }
+
+    .evidence-item .file-icon {
+      background: #dce8f5;
+      width: 32px;
+      height: 32px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #1f5a81;
+      flex-shrink: 0;
+    }
+
+    .evidence-item .info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .evidence-item .info .name {
+      font-weight: 600;
+      font-size: 0.8rem;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .evidence-item .info .meta {
+      font-size: 0.6rem;
+      color: #436a89;
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .status-badge {
+      font-size: 0.5rem;
+      font-weight: 700;
+      padding: 0.15rem 0.6rem;
+      border-radius: 40px;
+      text-transform: uppercase;
+      flex-shrink: 0;
+      white-space: nowrap;
+    }
+
+    .status-badge.verified { background: #cfe2ff; color: #004b9b; }
+    .status-badge.warning { background: #fff0d6; color: #a86400; }
+    .status-badge.ok { background: #dff0e3; color: #006f3a; }
+    .status-badge.tampered { background: #ffe0e0; color: #b30000; animation: pulse 0.6s; }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.06); }
+    }
+
+    .audit-panel {
+      background: #f4f9ff;
+      border-radius: 1.5rem;
+      padding: 1rem 1rem;
+      border: 1px solid #d8e4ef;
+    }
+
+    .audit-entry {
+      display: flex;
+      gap: 8px;
+      border-bottom: 1px solid #dce6f0;
+      padding: 0.4rem 0;
+      font-size: 0.7rem;
+      align-items: center;
+    }
+
+    .audit-entry:last-child { border-bottom: none; }
+
+    .audit-entry .time {
+      color: #3d688b;
+      font-weight: 500;
+      min-width: 44px;
+      font-size: 0.6rem;
+    }
+
+    /* Buttons - touch friendly */
+    .btn-group {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-top: 0.6rem;
+    }
+
+    .btn {
+      background: #0f3450;
+      border: none;
+      color: white;
+      padding: 0.4rem 1rem;
+      border-radius: 40px;
+      font-weight: 500;
+      font-size: 0.7rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      cursor: pointer;
+      transition: 0.15s;
+      touch-action: manipulation;
+      min-height: 38px;
+      justify-content: center;
+      flex: 1 1 auto;
+    }
+
+    .btn:active {
+      transform: scale(0.94);
+    }
+
+    .btn-outline {
+      background: transparent;
+      border: 1px solid #b2c9df;
+      color: #1b4a73;
+    }
+
+    .btn-danger {
+      background: #a13030;
+    }
+
+    .btn-danger:active {
+      background: #8a2525;
+    }
+
+    .btn-sm {
+      padding: 0.25rem 0.7rem;
+      font-size: 0.6rem;
+      min-height: 32px;
+    }
+
+    /* Case Files - mobile */
+    .case-files-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 0.7rem;
+    }
+
+    .file-card {
+      background: #f8fbfe;
+      border-radius: 1.2rem;
+      padding: 0.8rem 1rem;
+      border: 1px solid #dce6f0;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      transition: 0.15s;
+      touch-action: manipulation;
+    }
+
+    .file-card:active {
+      transform: scale(0.98);
+    }
+
+    .file-card .icon {
+      background: #d2e0ed;
+      width: 38px;
+      height: 38px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #00407a;
+      font-size: 1rem;
+      flex-shrink: 0;
+    }
+
+    .file-card .detail {
+      flex: 1;
+      min-width: 0;
+    }
+    .file-card .detail .title {
+      font-weight: 600;
+      font-size: 0.8rem;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .file-card .detail .sub {
+      font-size: 0.65rem;
+      color: #3a627f;
+    }
+
+    /* Audit Log Full */
+    .audit-log-full .log-entry {
+      display: flex;
+      justify-content: space-between;
+      padding: 0.5rem 0.3rem;
+      border-bottom: 1px solid #e2eaf2;
+      font-size: 0.75rem;
+      gap: 0.5rem;
+    }
+
+    .log-entry .user { font-weight: 600; color: #003d66; }
+    .log-entry .action { color: #1b3e5a; flex: 1; }
+    .log-entry .time { color: #4f7290; font-size: 0.65rem; white-space: nowrap; }
+
+    /* Footer */
+    .footer-bar {
+      margin-top: 1.2rem;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      border-top: 1px solid #d7e1eb;
+      padding-top: 0.8rem;
+      font-size: 0.55rem;
+      color: #2b5679;
+      gap: 0.4rem;
+    }
+
+    .toast-msg {
+      background: #0a2942;
+      color: white;
+      padding: 0.2rem 0.8rem;
+      border-radius: 60px;
+      font-size: 0.6rem;
+      transition: 0.3s;
+      text-align: center;
+      flex: 1;
+      min-width: 100px;
+    }
+
+    /* Modal */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0,0,0,0.45);
+      z-index: 999;
+      justify-content: center;
+      align-items: center;
+      backdrop-filter: blur(3px);
+      padding: 1.5rem;
+    }
+
+    .modal-overlay.active {
+      display: flex;
+    }
+
+    .modal-box {
+      background: white;
+      border-radius: 1.8rem;
+      padding: 1.8rem 1.5rem;
+      max-width: 360px;
+      width: 100%;
+      box-shadow: 0 30px 60px rgba(0,0,0,0.3);
+      animation: slideUp 0.3s ease;
+    }
+
+    @keyframes slideUp {
+      0% { transform: translateY(30px); opacity: 0; }
+      100% { transform: translateY(0); opacity: 1; }
+    }
+
+    .modal-box h3 {
+      margin-bottom: 0.6rem;
+      color: #0b2a44;
+      font-size: 1.1rem;
+    }
+
+    .modal-box p {
+      color: #2d5b7c;
+      margin-bottom: 1rem;
+      font-size: 0.9rem;
+      line-height: 1.4;
+    }
+
+    .modal-box .btn {
+      width: 100%;
+      justify-content: center;
+    }
+
+    /* Misc */
+    .hash-badge {
+      font-size: 0.55rem;
+      background: #0a2942;
+      color: #b3d6ff;
+      padding: 0.1rem 0.6rem;
+      border-radius: 60px;
+      display: inline-block;
+      white-space: nowrap;
+    }
+
+    .flex-between {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.3rem;
+    }
+
+    .mt-1 { margin-top: 0.6rem; }
+    .mb-1 { margin-bottom: 0.6rem; }
+    .w-full { width: 100%; }
+  </style>
+</head>
+<body>
+<div class="app-wrapper">
+
+  <!-- Top Bar -->
+  <div class="top-bar">
+    <div class="brand">
+      <div class="brand-icon"><i class="fas fa-gavel"></i></div>
+      <h1>DEMS <span>MHA</span></h1>
+    </div>
+    <div class="header-actions">
+      <span class="badge-mha"><i class="fas fa-shield-alt"></i> SECURE</span>
+      <div class="user-chip" id="userChip">
+        <i class="fas fa-user-tie"></i> IO <span style="font-weight:400;margin-left:2px;">· Sharma</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Navigation -->
+  <div class="nav-tabs">
+    <button class="nav-tab active" data-page="page-dashboard"><i class="fas fa-home"></i><span>Home</span></button>
+    <button class="nav-tab" data-page="page-files"><i class="fas fa-folder-open"></i><span>Files</span></button>
+    <button class="nav-tab" data-page="page-audit"><i class="fas fa-clipboard-list"></i><span>Audit</span></button>
+  </div>
+
+  <!-- ===== PAGE 1: DASHBOARD ===== -->
+  <div id="page-dashboard" class="page active">
+    <div class="stats-grid">
+      <div class="stat-card" id="statCases">
+        <div class="label"><i class="far fa-folder"></i> Cases</div>
+        <div class="value">14</div>
+        <div class="sub">+2 this week</div>
+      </div>
+      <div class="stat-card" id="statFiles">
+        <div class="label"><i class="fas fa-file-signature"></i> Evidence</div>
+        <div class="value" id="fileCountDisplay">87</div>
+        <div class="sub">SHA-256</div>
+      </div>
+      <div class="stat-card" id="statCustody">
+        <div class="label"><i class="fas fa-user-check"></i> Custody</div>
+        <div class="value" id="custodyCountDisplay">243</div>
+        <div class="sub">audit entries</div>
+      </div>
+      <div class="stat-card" id="statCourt">
+        <div class="label"><i class="fas fa-balance-scale"></i> Court</div>
+        <div class="value">6</div>
+        <div class="sub">bundles ready</div>
+      </div>
+    </div>
+
+    <!-- Flow -->
+    <div class="flow-section">
+      <div class="flex-between mb-1">
+        <span style="font-size:0.75rem;font-weight:600;"><i class="fas fa-route" style="color:#1a5d87;"></i> Case C-221</span>
+        <span class="hash-badge" id="hashDisplay"><i class="fas fa-fingerprint"></i> 7d4f…c9a2</span>
+      </div>
+      <div class="flow-steps-horizontal">
+        <div class="step-card" data-step="1"><div class="step-num">1</div><i class="fas fa-upload"></i><h4>Upload</h4></div>
+        <div class="step-card" data-step="2"><div class="step-num">2</div><i class="fas fa-lock"></i><h4>Encrypt</h4></div>
+        <div class="step-card" data-step="3"><div class="step-num">3</div><i class="fas fa-user-check"></i><h4>Access</h4></div>
+        <div class="step-card" data-step="4"><div class="step-num">4</div><i class="fas fa-check-circle"></i><h4>Verify</h4></div>
+        <div class="step-card" data-step="5"><div class="step-num">5</div><i class="fas fa-gavel"></i><h4>Court</h4></div>
+      </div>
+      <div class="status-banner" id="statusMessage"><i class="fas fa-check-circle" style="color:#007a3d;"></i> Last check: 12:34 · no alteration</div>
+    </div>
+
+    <!-- Evidence + Audit -->
+    <div class="docket-grid">
+      <div class="evidence-panel">
+        <div class="flex-between mb-1">
+          <span style="font-size:0.8rem;font-weight:600;"><i class="fas fa-folder-open" style="color:#11547c;"></i> Evidence</span>
+        </div>
+        <div id="evidenceList">
+          <!-- dynamic -->
+        </div>
+        <div class="btn-group">
+          <button class="btn btn-sm" id="addEvidenceBtn"><i class="fas fa-plus"></i> Add</button>
+          <button class="btn btn-sm btn-outline" id="verifyAllBtn"><i class="fas fa-shield-alt"></i> Verify</button>
+          <button class="btn btn-sm btn-danger" id="tamperBtn"><i class="fas fa-skull"></i> Tamper</button>
+        </div>
+      </div>
+
+      <div class="audit-panel">
+        <div class="flex-between mb-1">
+          <span style="font-size:0.8rem;font-weight:600;"><i class="fas fa-clipboard-list" style="color:#11547c;"></i> Recent</span>
+          <span style="font-size:0.55rem;background:#e6eff8;padding:0.1rem 0.6rem;border-radius:60px;"><i class="fas fa-water"></i> watermark</span>
+        </div>
+        <div id="recentAudit">
+          <!-- dynamic -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== PAGE 2: CASE FILES ===== -->
+  <div id="page-files" class="page">
+    <div class="flex-between mb-1">
+      <h2 style="font-size:1rem;"><i class="fas fa-folder-open" style="color:#004b7a;"></i> All files</h2>
+      <span class="badge-mha" style="background:#eaf0f7;color:#0b2a44;"><i class="fas fa-database"></i> <span id="totalFilesCount">87</span></span>
+    </div>
+    <div class="case-files-grid" id="caseFilesGrid">
+      <!-- dynamic -->
+    </div>
+    <div class="btn-group mt-1">
+      <button class="btn btn-sm" id="refreshFilesBtn"><i class="fas fa-sync"></i> Refresh</button>
+      <button class="btn btn-sm btn-outline" id="exportBundleBtn"><i class="fas fa-arrow-right"></i> Export</button>
+      <button class="btn btn-sm btn-outline" id="addFilePageBtn"><i class="fas fa-plus"></i> Add</button>
+    </div>
+  </div>
+
+  <!-- ===== PAGE 3: AUDIT LOG ===== -->
+  <div id="page-audit" class="page">
+    <div class="flex-between mb-1">
+      <h2 style="font-size:1rem;"><i class="fas fa-clipboard-list" style="color:#004b7a;"></i> Chain of custody</h2>
+      <span style="font-size:0.6rem;color:#4f7290;"><i class="fas fa-clock"></i> live</span>
+    </div>
+    <div class="audit-log-full" id="auditLogFull">
+      <!-- dynamic -->
+    </div>
+    <div class="btn-group mt-1">
+      <button class="btn btn-sm" id="addAuditEntryBtn"><i class="fas fa-plus"></i> Simulate</button>
+      <button class="btn btn-sm btn-outline" id="clearAuditBtn"><i class="fas fa-trash"></i> Clear</button>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div class="footer-bar">
+    <span><i class="fas fa-shield-halved"></i> SHA-256</span>
+    <span><i class="fas fa-gavel"></i> court-admissible</span>
+    <div id="toastMessage" class="toast-msg"><i class="fas fa-check-circle"></i> ready</div>
+  </div>
+</div>
+
+<!-- ===== MODAL ===== -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal-box">
+    <h3 id="modalTitle">Action</h3>
+    <p id="modalMessage">Confirmation</p>
+    <button class="btn" id="modalConfirmBtn">OK</button>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- JAVASCRIPT – FULLY INTERACTIVE + MOBILE TOUCH -->
+<!-- ============================================================ -->
+<script>
+  (function() {
+    'use strict';
+
+    // ----- DATA -----
+    let evidenceItems = [
+      { id: 1, name: 'CCTV_EntryGate.mp4', size: '2.4 GB', meta: 'IO: Sharma', status: 'verified', icon: 'fa-video' },
+      { id: 2, name: 'FSL_Report_0822.pdf', size: '1.2 MB', meta: 'forensic', status: 'verified', icon: 'fa-file-pdf' },
+      { id: 3, name: 'Scene_photos.zip', size: '340 MB', meta: '', status: 'warning', icon: 'fa-image' },
+      { id: 4, name: 'Audio_Statement.wav', size: '22 MB', meta: 'recorded', status: 'verified', icon: 'fa-microphone' }
+    ];
+    let nextId = 5;
+
+    let fileData = [
+      { name: 'CCTV_EntryGate.mp4', size: '2.4 GB', type: 'video', status: 'verified' },
+      { name: 'FSL_Report_0822.pdf', size: '1.2 MB', type: 'pdf', status: 'verified' },
+      { name: 'Scene_photos.zip', size: '340 MB', type: 'archive', status: 'warning' },
+      { name: 'Audio_Statement.wav', size: '22 MB', type: 'audio', status: 'verified' },
+      { name: 'Forensic_Image.dd', size: '4.1 GB', type: 'disk', status: 'ok' },
+      { name: 'Witness_Statement.docx', size: '0.8 MB', type: 'doc', status: 'verified' },
+      { name: 'Ballistics_Report.xlsx', size: '0.6 MB', type: 'excel', status: 'verified' },
+      { name: 'Call_Detail_Record.csv', size: '1.8 MB', type: 'csv', status: 'ok' }
+    ];
+
+    let auditLog = [
+      { time: '12:28', user: 'IO Sharma', action: 'viewed CCTV_EntryGate.mp4' },
+      { time: '11:15', user: 'Forensic Lab', action: 'downloaded FSL_Report_0822.pdf' },
+      { time: '09:40', user: 'IO Sharma', action: 'updated metadata' },
+      { time: '08:10', user: 'system', action: 'hash verification passed' },
+      { time: '07:55', user: 'Prosecutor', action: 'granted access' }
+    ];
+
+    // ----- DOM refs -----
+    const evidenceList = document.getElementById('evidenceList');
+    const caseFilesGrid = document.getElementById('caseFilesGrid');
+    const auditLogFull = document.getElementById('auditLogFull');
+    const recentAudit = document.getElementById('recentAudit');
+    const fileCountDisplay = document.getElementById('fileCountDisplay');
+    const totalFilesCount = document.getElementById('totalFilesCount');
+    const custodyCountDisplay = document.getElementById('custodyCountDisplay');
+    const toastMsg = document.getElementById('toastMessage');
+    const statusMessage = document.getElementById('statusMessage');
+    const hashDisplay = document.getElementById('hashDisplay');
+
+    const modalOverlay = document.getElementById('modalOverlay');
+    const modalTitle = document.getElementById('modalTitle');
+    const modalMessage = document.getElementById('modalMessage');
+    const modalConfirmBtn = document.getElementById('modalConfirmBtn');
+
+    // ----- Toast -----
+    function showToast(text, icon = 'fa-check-circle', color = '#0a2942') {
+      toastMsg.innerHTML = `<i class="fas ${icon}"></i> ${text}`;
+      toastMsg.style.background = color;
+      clearTimeout(toastMsg._timeout);
+      toastMsg._timeout = setTimeout(() => {
+        toastMsg.innerHTML = `<i class="fas fa-check-circle"></i> ready`;
+        toastMsg.style.background = '#0a2942';
+      }, 2500);
+    }
+
+    // ----- Modal -----
+    function showModal(title, message, callback) {
+      modalTitle.textContent = title;
+      modalMessage.textContent = message;
+      modalOverlay.classList.add('active');
+      modalConfirmBtn.onclick = function() {
+        modalOverlay.classList.remove('active');
+        if (callback) callback();
+      };
+    }
+
+    // Close modal on overlay click
+    modalOverlay.addEventListener('click', function(e) {
+      if (e.target === this) {
+        this.classList.remove('active');
+      }
+    });
+
+    // ----- Render functions -----
+    function renderEvidence() {
+      if (!evidenceList) return;
+      evidenceList.innerHTML = evidenceItems.map(item => `
+        <div class="evidence-item" data-id="${item.id}">
+          <div class="file-icon"><i class="fas ${item.icon}"></i></div>
+          <div class="info"><div class="name">${item.name}</div><div class="meta"><span>${item.size}</span><span>${item.meta}</span></div></div>
+          <span class="status-badge ${item.status}">${item.status}</span>
+        </div>
+      `).join('');
+      const count = evidenceItems.length + 83;
+      if (fileCountDisplay) fileCountDisplay.textContent = count;
+      if (totalFilesCount) totalFilesCount.textContent = count;
+    }
+
+    function renderCaseFiles() {
+      if (!caseFilesGrid) return;
+      const allFiles = [...fileData];
+      caseFilesGrid.innerHTML = allFiles.map(f => {
+        const iconMap = { video: 'fa-video', pdf: 'fa-file-pdf', archive: 'fa-file-archive', audio: 'fa-microphone', disk: 'fa-hdd', doc: 'fa-file-word', excel: 'fa-file-excel', csv: 'fa-file-csv' };
+        const icon = iconMap[f.type] || 'fa-file';
+        return `
+          <div class="file-card">
+            <div class="icon"><i class="fas ${icon}"></i></div>
+            <div class="detail"><div class="title">${f.name}</div><div class="sub">${f.size} · ${f.status}</div></div>
+            <span class="status-badge ${f.status}">${f.status}</span>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function renderAuditLog() {
+      if (!auditLogFull) return;
+      auditLogFull.innerHTML = auditLog.map(entry => `
+        <div class="log-entry">
+          <span><span class="user">${entry.user}</span> <span class="action">${entry.action}</span></span>
+          <span class="time">${entry.time}</span>
+        </div>
+      `).join('');
+    }
+
+    function renderRecentAudit() {
+      if (!recentAudit) return;
+      const recent = auditLog.slice(0, 4);
+      recentAudit.innerHTML = recent.map(entry => `
+        <div class="audit-entry"><span class="time">${entry.time}</span><span class="action">${entry.action} by <span class="user">${entry.user}</span></span></div>
+      `).join('');
+      if (custodyCountDisplay) custodyCountDisplay.textContent = auditLog.length + 238;
+    }
+
+    function updateStatus(message, isGood = true) {
+      if (!statusMessage) return;
+      statusMessage.innerHTML = `<i class="fas ${isGood ? 'fa-check-circle' : 'fa-exclamation-triangle'}" style="color: ${isGood ? '#007a3d' : '#b30000'};"></i> ${message}`;
+    }
+
+    // ----- Core actions (mobile friendly) -----
+    function addEvidence() {
+      const names = ['Bodycam_Footage.mov', 'Dashcam_Record.avi', 'Forensic_Report_v2.pdf', 'Crime_Scene_360.jpg', 'Interview_Transcript.docx'];
+      const name = names[Math.floor(Math.random() * names.length)];
+      const sizes = ['1.2 GB', '450 MB', '2.8 MB', '6.2 GB', '0.9 MB'];
+      const size = sizes[Math.floor(Math.random() * sizes.length)];
+      const newItem = {
+        id: nextId++,
+        name: name,
+        size: size,
+        meta: 'IO: Sharma',
+        status: 'warning',
+        icon: 'fa-file'
+      };
+      evidenceItems.push(newItem);
+      const typeMap = { 'Bodycam_Footage.mov': 'video', 'Dashcam_Record.avi': 'video', 'Forensic_Report_v2.pdf': 'pdf', 'Crime_Scene_360.jpg': 'archive', 'Interview_Transcript.docx': 'doc' };
+      fileData.push({ name, size, type: typeMap[name] || 'file', status: 'warning' });
+      renderEvidence();
+      renderCaseFiles();
+      const now = new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
+      auditLog.unshift({ time: now, user: 'IO Sharma', action: `uploaded ${name}` });
+      renderAuditLog();
+      renderRecentAudit();
+      showToast(`added ${name}`, 'fa-plus');
+      updateStatus(`Last check: ${now} · file added`, true);
+    }
+
+    function verifyAll() {
+      evidenceItems.forEach(item => item.status = 'verified');
+      fileData.forEach(item => item.status = 'verified');
+      renderEvidence();
+      renderCaseFiles();
+      const now = new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
+      auditLog.unshift({ time: now, user: 'system', action: 'verified all files · SHA-256 match' });
+      renderAuditLog();
+      renderRecentAudit();
+      showToast('all verified', 'fa-shield-alt');
+      updateStatus(`Last check: ${now} · all verified ✓`, true);
+      hashDisplay.innerHTML = `<i class="fas fa-fingerprint"></i> 7d4f…c9a2 ✓`;
+    }
+
+    function tamperTest() {
+      if (evidenceItems.length === 0) return;
+      const randomIndex = Math.floor(Math.random() * evidenceItems.length);
+      const item = evidenceItems[randomIndex];
+      const oldStatus = item.status;
+      item.status = 'tampered';
+      const fileIdx = fileData.findIndex(f => f.name === item.name);
+      if (fileIdx !== -1) fileData[fileIdx].status = 'tampered';
+      renderEvidence();
+      renderCaseFiles();
+      const now = new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
+      auditLog.unshift({ time: now, user: '⚠️ ALERT', action: `TAMPER DETECTED: ${item.name}` });
+      renderAuditLog();
+      renderRecentAudit();
+      showToast(`⚠️ TAMPER in ${item.name}`, 'fa-skull', '#a13030');
+      updateStatus(`⚠️ ALERT: ${item.name} hash mismatch!`, false);
+      hashDisplay.innerHTML = `<i class="fas fa-skull" style="color:#ff6b6b;"></i> 7d4f…c9a2 ⚠️`;
+      showModal('⚠️ TAMPER DETECTED', `File "${item.name}" has been altered! Hash verification failed.`, () => {
+        item.status = oldStatus;
+        const fIdx = fileData.findIndex(f => f.name === item.name);
+        if (fIdx !== -1) fileData[fIdx].status = oldStatus;
+        renderEvidence();
+        renderCaseFiles();
+        showToast('reverted', 'fa-undo');
+        updateStatus(`Last check: ${now} · reverted`, true);
+        hashDisplay.innerHTML = `<i class="fas fa-fingerprint"></i> 7d4f…c9a2 ✓`;
+      });
+    }
+
+    function addAuditEntry() {
+      const users = ['IO Sharma', 'Forensic Specialist', 'Prosecutor', 'system', 'Forensic Lab'];
+      const actions = ['viewed evidence', 'downloaded file (watermarked)', 'updated metadata', 'verified hash', 'granted access', 'exported bundle'];
+      const now = new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
+      auditLog.unshift({ time: now, user: users[Math.floor(Math.random() * users.length)], action: actions[Math.floor(Math.random() * actions.length)] });
+      renderAuditLog();
+      renderRecentAudit();
+      showToast('audit entry added', 'fa-clipboard');
+    }
+
+    function clearAudit() {
+      showModal('Clear Audit Log?', 'This will remove all audit entries.', () => {
+        auditLog = [];
+        renderAuditLog();
+        renderRecentAudit();
+        showToast('audit cleared', 'fa-trash');
+      });
+    }
+
+    function refreshHashes() {
+      const now = new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
+      const allVerified = evidenceItems.every(item => item.status !== 'tampered' && item.status !== 'warning');
+      if (allVerified) {
+        updateStatus(`Last check: ${now} · all verified ✓`, true);
+        hashDisplay.innerHTML = `<i class="fas fa-fingerprint"></i> 7d4f…c9a2 ✓`;
+        showToast('hashes verified', 'fa-shield-alt');
+      } else {
+        updateStatus(`⚠️ some files need verification`, false);
+        showToast('hash mismatch!', 'fa-exclamation-triangle', '#a13030');
+      }
+      auditLog.unshift({ time: now, user: 'system', action: 'refreshed hash verification' });
+      renderAuditLog();
+      renderRecentAudit();
+    }
+
+    function exportBundle() {
+      showModal('Export Case Bundle', 'Certified bundle with audit log for court submission.', () => {
+        showToast('bundle exported', 'fa-file-export');
+        const now = new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
+        auditLog.unshift({ time: now, user: 'Prosecutor', action: 'exported certified bundle' });
+        renderAuditLog();
+        renderRecentAudit();
+      });
+    }
+
+    // ----- Navigation -----
+    function navigateTo(pageId) {
+      document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+      const target = document.getElementById(pageId);
+      if (target) target.classList.add('active');
+      document.querySelectorAll('.nav-tab').forEach(tab => {
+        tab.classList.remove('active');
+        if (tab.dataset.page === pageId) tab.classList.add('active');
+      });
+    }
+
+    document.querySelectorAll('.nav-tab').forEach(tab => {
+      tab.addEventListener('click', function(e) {
+        navigateTo(this.dataset.page);
+        showToast(this.textContent.trim(), 'fa-eye');
+      });
+      // Touch feedback
+      tab.addEventListener('touchstart', function() {
+        this.style.opacity = '0.7';
+      }, { passive: true });
+      tab.addEventListener('touchend', function() {
+        this.style.opacity = '1';
+      }, { passive: true });
+    });
+
+    // ----- Event listeners (mobile touch friendly) -----
+    const addEvidenceBtn = document.getElementById('addEvidenceBtn');
+    const verifyAllBtn = document.getElementById('verifyAllBtn');
+    const tamperBtn = document.getElementById('tamperBtn');
+    const addAuditBtn = document.getElementById('addAuditEntryBtn');
+    const clearAuditBtn = document.getElementById('clearAuditBtn');
+    const refreshBtn = document.getElementById('refreshFilesBtn');
+    const exportBtn = document.getElementById('exportBundleBtn');
+    const addFilePageBtn = document.getElementById('addFilePageBtn');
+
+    if (addEvidenceBtn) addEvidenceBtn.addEventListener('click', addEvidence);
+    if (verifyAllBtn) verifyAllBtn.addEventListener('click', verifyAll);
+    if (tamperBtn) tamperBtn.addEventListener('click', tamperTest);
+    if (addAuditBtn) addAuditBtn.addEventListener('click', addAuditEntry);
+    if (clearAuditBtn) clearAuditBtn.addEventListener('click', clearAudit);
+    if (refreshBtn) refreshBtn.addEventListener('click', refreshHashes);
+    if (exportBtn) exportBtn.addEventListener('click', exportBundle);
+    if (addFilePageBtn) addFilePageBtn.addEventListener('click', addEvidence);
+
+    // Step cards
+    document.querySelectorAll('.step-card').forEach(card => {
+      card.addEventListener('click', function() {
+        const step = this.dataset.step;
+        const steps = ['Upload', 'Encrypt', 'Access', 'Verify', 'Court'];
+        showModal(`Step ${step}: ${steps[step-1]}`, 'This triggers the corresponding workflow in the system.', () => {
+          showToast(`step ${step} selected`, 'fa-arrow-right');
+        });
+      });
+    });
+
+    // User chip
+    const userChip = document.getElementById('userChip');
+    if (userChip) {
+      userChip.addEventListener('click', function() {
+        const roles = ['IO · Sharma', 'Forensic Specialist', 'Public Prosecutor', 'Admin'];
+        const current = this.textContent.trim().split('·')[0].trim();
+        let nextRole = roles[0];
+        for (let i = 0; i < roles.length; i++) {
+          if (roles[i].includes(current)) {
+            nextRole = roles[(i + 1) % roles.length];
+            break;
+          }
+        }
+        this.innerHTML = `<i class="fas fa-user-tie"></i> ${nextRole}`;
+        showToast(`switched to ${nextRole}`, 'fa-user-switch');
+        const now = new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
+        auditLog.unshift({ time: now, user: nextRole, action: 'switched role' });
+        renderAuditLog();
+        renderRecentAudit();
+      });
+    }
+
+    // Stat cards
+    document.querySelectorAll('.stat-card').forEach(card => {
+      card.addEventListener('click', function() {
+        const label = this.querySelector('.label')?.textContent?.trim() || 'Stat';
+        const value = this.querySelector('.value')?.textContent || '';
+        showModal(label, `Current value: ${value}`, () => {});
+      });
+    });
+
+    // ----- Init -----
+    renderEvidence();
+    renderCaseFiles();
+    renderAuditLog();
+    renderRecentAudit();
+    updateStatus('Last check: 12:34 · no alteration', true);
+
+    // Welcome
+    setTimeout(() => {
+      showToast('DEMS mobile ready', 'fa-gavel');
+    }, 400);
+
+  })();
+</script>
+</body>
+</html>
