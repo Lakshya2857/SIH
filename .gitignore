@@ -1,0 +1,5 @@
+node_modules/
+backend/node_modules/
+backend/trace_vault.db
+backend/uploads/
+.env

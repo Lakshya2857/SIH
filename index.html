@@ -101,7 +101,7 @@
         .ev-meta { font-size: 0.75rem; color: var(--text-muted); }
 
         /* Upload Area */
-        .drop-zone { border: 2px dashed var(--border); border-radius: 8px; padding: 2rem; text-align: center; background: var(--bg-input); cursor: pointer; transition: 0.2s; margin-bottom: 1.5rem; }
+        .drop-zone { border: 2px dashed var(--border); border-radius: 8px; padding: 2rem; text-align: center; background: var(--bg-input); cursor: pointer; transition: 0.2s; margin-bottom: 1.5rem; display: block; width: 100%; }
         .drop-zone:hover { border-color: var(--primary); background: rgba(37, 99, 235, 0.05); }
         .drop-zone i { font-size: 2.5rem; color: var(--text-muted); margin-bottom: 1rem; }
 
@@ -122,8 +122,7 @@
         .modal-header h3 { font-size: 1rem; font-weight: 600; }
         .modal-body { padding: 1.5rem; }
         
-        /* NEW: Image Box for CCTV/Photos */
-        .evidence-image { width: 100%; height: 200px; object-fit: cover; border-radius: 8px; border: 1px solid var(--border); margin-bottom: 1rem; background: var(--bg-input); }
+        .evidence-image { width: 100%; max-height: 250px; object-fit: contain; border-radius: 8px; border: 1px solid var(--border); margin-bottom: 1rem; background: var(--bg-input); }
         .hash-box { background: var(--bg-input); border: 1px solid var(--border); padding: 0.75rem; border-radius: 6px; font-family: monospace; font-size: 0.7rem; word-break: break-all; margin-top: 1rem; color: var(--success); }
         .modal-footer { padding: 1rem 1.5rem; border-top: 1px solid var(--border); display: flex; gap: 0.5rem; }
 
@@ -231,14 +230,18 @@
 
                 <!-- Page: Upload (Admin Only) -->
                 <div class="page admin-only" id="page-upload">
-                    <div class="drop-zone">
+                    <!-- NEW: File Upload Drop Zone -->
+                    <label for="evFile" class="drop-zone">
                         <i class="fas fa-file-upload"></i>
-                        <h3 class="font-semibold text-sm">Select Evidence File</h3>
-                        <p class="text-xs text-muted mt-2">Files are automatically SHA-256 hashed.</p>
-                    </div>
+                        <h3 class="font-semibold text-sm" id="uploadText">Click to select an Image</h3>
+                        <p class="text-xs text-muted mt-2">Selected images will be securely hashed.</p>
+                        <!-- Hidden File Input -->
+                        <input type="file" id="evFile" accept="image/*" class="hidden">
+                    </label>
+
                     <div class="form-group">
                         <label>File Name</label>
-                        <input type="text" id="evName" class="form-control" placeholder="e.g. Suspect_Interview.mp4">
+                        <input type="text" id="evName" class="form-control" placeholder="e.g. Crime_Scene_Photo.jpg">
                     </div>
                     <div class="form-group">
                         <label>Case Reference</label>
@@ -272,7 +275,7 @@
             <div class="modal-body text-center">
                 <!-- IMAGE PLACEHOLDER -->
                 <img id="vImage" src="" alt="Evidence Photo" class="evidence-image hidden">
-                <!-- ICON PLACEHOLDER -->
+                <!-- ICON PLACEHOLDER (If no image) -->
                 <i id="vIcon" class="fas fa-file-archive" style="font-size: 3rem; color: var(--primary); margin-bottom: 1rem;"></i>
                 
                 <h4 id="vTitle" class="font-bold">File Name</h4>
@@ -316,11 +319,13 @@
                 { time: '10:00 AM', user: 'System', action: 'Vault initialized & secured.' }
             ];
 
-            // DOM
+            // DOM Elements
             const loginScreen = document.getElementById('loginScreen');
             const mainApp = document.getElementById('mainApp');
             const toast = document.getElementById('appToast');
             const viewerModal = document.getElementById('viewerModal');
+            const evFileInput = document.getElementById('evFile');
+            const uploadText = document.getElementById('uploadText');
 
             // Quick Login via Account Cards
             document.querySelectorAll('.account-card').forEach(acc => {
@@ -389,29 +394,64 @@
                 e.currentTarget.innerHTML = isDark ? '<i class="fas fa-moon"></i>' : '<i class="fas fa-sun"></i>';
             });
 
-            // UPLOAD
+            // UPDATE UPLOAD TEXT ON FILE SELECT
+            evFileInput.addEventListener('change', function() {
+                if (this.files && this.files[0]) {
+                    uploadText.textContent = this.files[0].name;
+                    uploadText.style.color = 'var(--primary)';
+                    // Auto-fill the name field for convenience
+                    document.getElementById('evName').value = this.files[0].name;
+                } else {
+                    uploadText.textContent = 'Click to select an Image';
+                    uploadText.style.color = 'inherit';
+                }
+            });
+
+            // UPLOAD PROCESS
             document.getElementById('btnSubmitUpload').addEventListener('click', () => {
                 const name = document.getElementById('evName').value;
                 const caseRef = document.getElementById('caseRef').value;
                 
-                if(!name || !caseRef) return showToast('Validation Error: Fill all fields');
+                if(!name || !caseRef) return showToast('Validation Error: Fill all text fields');
                 
-                evidenceDB.unshift({
-                    id: Date.now(),
-                    case: caseRef,
-                    name: name,
-                    hash: CryptoJS.SHA256(name + Date.now()).toString(),
-                    date: new Date().toLocaleDateString('en-GB'),
-                    image: null // New uploads default to no image for simplicity
-                });
+                const handleUpload = (imageDataUrl) => {
+                    evidenceDB.unshift({
+                        id: Date.now(),
+                        case: caseRef,
+                        name: name,
+                        hash: CryptoJS.SHA256(name + Date.now()).toString(),
+                        date: new Date().toLocaleDateString('en-GB'),
+                        image: imageDataUrl // Set the base64 image data
+                    });
 
-                document.getElementById('evName').value = '';
-                document.getElementById('caseRef').value = '';
-                
-                addLog(`Uploaded encrypted evidence for ${caseRef}`);
-                renderEvidence();
-                showToast('Record secured in vault');
-                switchTab('page-evidence');
+                    // Reset Fields
+                    document.getElementById('evName').value = '';
+                    document.getElementById('caseRef').value = '';
+                    evFileInput.value = ''; 
+                    uploadText.textContent = 'Click to select an Image';
+                    uploadText.style.color = 'inherit';
+                    
+                    addLog(`Uploaded encrypted evidence for ${caseRef}`);
+                    renderEvidence();
+                    showToast('Record & Image secured in vault');
+                    switchTab('page-evidence');
+                };
+
+                // Check if a file was selected
+                if (evFileInput.files && evFileInput.files[0]) {
+                    const file = evFileInput.files[0];
+                    const reader = new FileReader();
+                    
+                    reader.onload = function(e) {
+                        handleUpload(e.target.result); // Pass the base64 string
+                    };
+                    
+                    // Read file as Data URL
+                    reader.readAsDataURL(file);
+                } else {
+                    // Uploading without an image
+                    handleUpload(null);
+                }
             });
 
             // RENDER LIST
@@ -440,7 +480,7 @@
                 `).join('');
             }
 
-            // VIEWER WITH IMAGE LOGIC
+            // VIEWER WITH DYNAMIC IMAGE
             window.viewEvidence = function(id) {
                 const ev = evidenceDB.find(e => e.id === id);
                 if(!ev) return;
@@ -453,12 +493,13 @@
                 const vIcon = document.getElementById('vIcon');
                 const vImage = document.getElementById('vImage');
 
-                // Check if evidence has an image
+                // If evidence has an image (URL or Base64), show it
                 if (ev.image) {
                     vImage.src = ev.image;
                     vImage.classList.remove('hidden');
                     vIcon.classList.add('hidden');
                 } else {
+                    vImage.src = '';
                     vImage.classList.add('hidden');
                     vIcon.classList.remove('hidden');
                 }
